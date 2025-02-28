@@ -1,0 +1,77 @@
+#include &lt;stdio.h&gt;
+#define MAX_FRAMES 10
+#define MAX_PAGES 100
+int findLRU(int time[], int frames) {
+int min = time[0], pos = 0;
+for (int i = 1; i &lt; frames; i++) {
+
+if (time[i] &lt; min) {
+min = time[i];
+pos = i;
+}
+}
+return pos;
+}
+void lruPageReplacement(int pages[], int n, int frames) {
+int pageFrame[MAX_FRAMES], time[MAX_FRAMES], pageFaults = 0, counter = 0;
+for (int i = 0; i &lt; frames; i++) {
+pageFrame[i] = -1;
+}
+printf(&quot;Page Reference String: &quot;);
+for (int i = 0; i &lt; n; i++) {
+printf(&quot;%d &quot;, pages[i]);
+}
+printf(&quot;\n\n&quot;);
+for (int i = 0; i &lt; n; i++) {
+int found = 0;
+for (int j = 0; j &lt; frames; j++) {
+if (pageFrame[j] == pages[i]) {
+found = 1;
+time[j] = counter++;
+break;
+}
+}
+if (!found) {
+int pos;
+if (i &lt; frames) {
+pos = i;
+} else {
+pos = findLRU(time, frames);
+}
+pageFrame[pos] = pages[i];
+time[pos] = counter++;
+pageFaults++;
+printf(&quot;Page %d caused a fault. Frames: &quot;, pages[i]);
+for (int j = 0; j &lt; frames; j++) {
+if (pageFrame[j] == -1)
+printf(&quot; - &quot;);
+else
+
+printf(&quot;%d &quot;, pageFrame[j]);
+}
+printf(&quot;\n&quot;);
+} else {
+printf(&quot;Page %d is already in the frame (Hit).\n&quot;, pages[i]);
+}
+}
+printf(&quot;\nTotal Page Faults: %d\n&quot;, pageFaults);
+}
+int main() {
+int n, frames;
+int pages[MAX_PAGES];
+printf(&quot;Enter number of pages: &quot;);
+scanf(&quot;%d&quot;, &amp;n);
+printf(&quot;Enter the page reference string: &quot;);
+for (int i = 0; i &lt; n; i++) {
+scanf(&quot;%d&quot;, &amp;pages[i]);
+}
+printf(&quot;Enter number of frames: &quot;);
+scanf(&quot;%d&quot;, &amp;frames);
+lruPageReplacement(pages, n, frames);
+return 0;
+}
+
+input :
+input page refernce : 1 2 3 4 7 5  3 4 2 6 7 8 9 2 7 8 5 2 4 9
+output :
+total page faults : 16
