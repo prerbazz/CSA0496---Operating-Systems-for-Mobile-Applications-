@@ -1,0 +1,63 @@
+#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+
+#include &lt;semaphore.h&gt;
+#include &lt;unistd.h&gt;
+#define BUFFER_SIZE 5
+int buffer[BUFFER_SIZE];
+int in = 0, out = 0;
+sem_t empty, full;
+pthread_mutex_t mutex;
+void *producer(void *arg) {
+int item;
+for (int i = 0; i &lt; 10; i++) {
+item = i + 1;
+sem_wait(&amp;empty);
+pthread_mutex_lock(&amp;mutex);
+buffer[in] = item;
+printf(&quot;Producer produced: %d\n&quot;, item);
+in = (in + 1) % BUFFER_SIZE;
+pthread_mutex_unlock(&amp;mutex);
+sem_post(&amp;full);
+sleep(1);
+}
+}
+void *consumer(void *arg) {
+int item;
+for (int i = 0; i &lt; 10; i++) {
+sem_wait(&amp;full);
+pthread_mutex_lock(&amp;mutex);
+item = buffer[out];
+printf(&quot;Consumer consumed: %d\n&quot;, item);
+out = (out + 1) % BUFFER_SIZE;
+pthread_mutex_unlock(&amp;mutex);
+sem_post(&amp;empty);
+sleep(2);
+}
+}
+int main() {
+
+pthread_t prod, cons;
+sem_init(&amp;empty, 0, BUFFER_SIZE);
+sem_init(&amp;full, 0, 0);
+pthread_mutex_init(&amp;mutex, NULL);
+pthread_create(&amp;prod, NULL, producer, NULL);
+pthread_create(&amp;cons, NULL, consumer, NULL);
+pthread_join(prod, NULL);
+pthread_join(cons, NULL);
+sem_destroy(&amp;empty);
+sem_destroy(&amp;full);
+pthread_mutex_destroy(&amp;mutex);
+return 0;
+}
+
+input :
+procedure produced : 1
+comsumer consumed : 1
+procedure produced : 2
+consumer consumed : 2
+procedure produced : 3
+consumer consumed : 4
+procedure produced : 3
+producer produced : 5
+consumer consumed : 4
