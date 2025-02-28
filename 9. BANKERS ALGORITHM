@@ -1,0 +1,71 @@
+#include &lt;stdio.h&gt;
+#define P 5
+#define R 3
+void calculateNeed(int need[P][R], int max[P][R], int allocation[P][R]) {
+for (int i = 0; i &lt; P; i++)
+for (int j = 0; j &lt; R; j++)
+need[i][j] = max[i][j] - allocation[i][j];
+}
+int isSafe(int processes[], int available[], int max[P][R], int allocation[P][R]) {
+int need[P][R], work[R], finish[P] = {0}, safeSeq[P], index = 0;
+
+calculateNeed(need, max, allocation);
+
+for (int i = 0; i &lt; R; i++)
+work[i] = available[i];
+
+for (int count = 0; count &lt; P; count++) {
+int found = 0;
+for (int i = 0; i &lt; P; i++) {
+if (finish[i] == 0) {
+int flag = 1;
+for (int j = 0; j &lt; R; j++)
+if (need[i][j] &gt; work[j]) {
+flag = 0;
+break;
+}
+if (flag) {
+for (int k = 0; k &lt; R; k++)
+work[k] += allocation[i][k];
+safeSeq[index++] = i;
+finish[i] = 1;
+found = 1;
+}
+}
+}
+if (!found) {
+printf(&quot;System is in an UNSAFE state! Deadlock may occur.\n&quot;);
+return 0;
+}
+}
+
+printf(&quot;System is in a SAFE state.\nSafe Sequence: &quot;);
+for (int i = 0; i &lt; P; i++)
+printf(&quot;P%d &quot;, safeSeq[i]);
+printf(&quot;\n&quot;);
+return 1;
+}
+int main() {
+int processes[P] = {0, 1, 2, 3, 4};
+int available[R] = {3, 3, 2};
+
+int max[P][R] = {
+{7, 5, 3},
+{3, 2, 2},
+{9, 0, 2},
+{2, 2, 2},
+{4, 3, 3}
+};
+int allocation[P][R] = {
+{0, 1, 0},
+{2, 0, 0},
+{3, 0, 2},
+{2, 1, 1},
+{0, 0, 2}
+};
+isSafe(processes, available, max, allocation);
+return 0;
+}
+
+output :
+system is in an unsafe state! deadlock may occur
