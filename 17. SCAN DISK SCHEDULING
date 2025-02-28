@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100  
+
+int cmpfunc(const void *a, const void *b) {
+    return (*(int *)a - *(int *)b);
+}
+
+void SCAN(int requests[], int n, int head, int disk_size, int direction) {
+    int seek_count = 0, distance, current_track;
+    int left[MAX], right[MAX], left_size = 0, right_size = 0;
+
+    if (direction == -1) 
+        left[left_size++] = 0;  
+    else 
+        right[right_size++] = disk_size - 1; 
+
+    for (int i = 0; i < n; i++) {
+        if (requests[i] < head)
+            left[left_size++] = requests[i];
+        else
+            right[right_size++] = requests[i];
+    }
+
+    qsort(left, left_size, sizeof(int), cmpfunc);
+    qsort(right, right_size, sizeof(int), cmpfunc);
+
+    printf("Sequence of disk access: %d", head);
+
+    if (direction == -1) {
+        for (int i = left_size - 1; i >= 0; i--) {
+            current_track = left[i];
+            distance = abs(current_track - head);
+            seek_count += distance;
+            head = current_track;
+            printf(" -> %d", head);
+        }
+        for (int i = 0; i < right_size; i++) {
+            current_track = right[i];
+            distance = abs(current_track - head);
+            seek_count += distance;
+            head = current_track;
+            printf(" -> %d", head);
+        }
+    } else {
+        for (int i = 0; i < right_size; i++) {
+            current_track = right[i];
+            distance = abs(current_track - head);
+            seek_count += distance;
+            head = current_track;
+            printf(" -> %d", head);
+        }
+        for (int i = left_size - 1; i >= 0; i--) {
+            current_track = left[i];
+            distance = abs(current_track - head);
+            seek_count += distance;
+            head = current_track;
+            printf(" -> %d", head);
+        }
+    }
+
+    printf("\nTotal Seek Time: %d\n", seek_count);
+}
+
+int main() {
+    int requests[] = {98, 183, 37, 122, 14, 124, 65, 67};
+    int n = sizeof(requests) / sizeof(requests[0]);
+    int head = 53, disk_size = 200, direction = 1;  
+
+    printf("Initial Head Position: %d\n", head);
+    SCAN(requests, n, head, disk_size, direction);
+
+    return 0;
+}
+OUTPUT :
+Initial Head Position : 53
+Sequence of Disk access : 53 ->65 ->67 ->98 ->122 ->124 ->183 -> 199 -> 37 -> 14
+Total Seek Time : 331
