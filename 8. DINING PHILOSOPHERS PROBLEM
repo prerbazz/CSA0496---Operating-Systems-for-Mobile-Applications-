@@ -1,0 +1,55 @@
+#include &lt;stdio.h&gt;
+
+#include &lt;pthread.h&gt;
+#include &lt;semaphore.h&gt;
+#include &lt;unistd.h&gt;
+#define N 5
+sem_t forks[N];
+pthread_mutex_t mutex;
+void think(int philosopher) {
+printf(&quot;Philosopher %d is thinking...\n&quot;, philosopher);
+sleep(1);
+}
+void eat(int philosopher) {
+printf(&quot;Philosopher %d is eating...\n&quot;, philosopher);
+sleep(2);
+}
+void *philosopher(void *arg) {
+int id = *(int *)arg;
+while (1) {
+think(id);
+
+sem_wait(&amp;forks[id]);
+sem_wait(&amp;forks[(id + 1) % N]);
+
+pthread_mutex_lock(&amp;mutex);
+eat(id);
+pthread_mutex_unlock(&amp;mutex);
+
+sem_post(&amp;forks[id]);
+sem_post(&amp;forks[(id + 1) % N]);
+}
+}
+int main() {
+pthread_t threads[N];
+int philosophers[N];
+pthread_mutex_init(&amp;mutex, NULL);
+for (int i = 0; i &lt; N; i++)
+sem_init(&amp;forks[i], 0, 1);
+
+for (int i = 0; i &lt; N; i++) {
+philosophers[i] = i;
+pthread_create(&amp;threads[i], NULL, philosopher, &amp;philosophers[i]);
+}
+
+for (int i = 0; i &lt; N; i++)
+pthread_join(threads[i], NULL);
+return 0;
+}
+
+output :
+philosopher 1 is thinking...
+philosopher 0 is thinking...
+philosopher 2 is thinking...
+philosopher 3 is thinking...
+philosopher 1 is eating...
