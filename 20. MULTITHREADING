@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <pthread.h>
+#define NUM_THREADS 5
+
+void* print_thread_id(void* arg) {
+    int thread_num = *((int*)arg);
+    printf("Hello from thread %d!\n", thread_num);
+    return NULL;
+}
+
+int main() {
+    pthread_t threads[NUM_THREADS];
+    int thread_ids[NUM_THREADS];
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        thread_ids[i] = i + 1;
+        pthread_create(&threads[i], NULL, print_thread_id, (void*)&thread_ids[i]);
+    }
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    printf("All threads have finished execution.\n");
+    return 0;
+}
+
+INPUT:
+from the program
+
+OUPUT:
+Hello from thread 3!
+Hello from thread 5!
+Hello from thread 1!
+Hello from thread 2!
+Hello from thread 4!
+All threads have finished execution
