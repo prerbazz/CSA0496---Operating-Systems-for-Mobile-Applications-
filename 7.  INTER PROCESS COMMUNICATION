@@ -1,0 +1,27 @@
+#include &lt;stdio.h&gt;
+#include &lt;sys/ipc.h&gt;
+#include &lt;sys/msg.h&gt;
+#include &lt;string.h&gt;
+struct msg_buffer {
+long msg_type;
+
+char msg_text[100];
+};
+int main() {
+key_t key;
+int msgid;
+struct msg_buffer message;
+key = ftok(&quot;msg_queue&quot;, 65);
+msgid = msgget(key, 0666 | IPC_CREAT);
+message.msg_type = 1;
+strcpy(message.msg_text, &quot;Hello from IPC message queue!&quot;);
+msgsnd(msgid, &amp;message, sizeof(message), 0);
+printf(&quot;Message sent: %s\n&quot;, message.msg_text);
+msgrcv(msgid, &amp;message, sizeof(message), 1, 0);
+printf(&quot;Message received: %s\n&quot;, message.msg_text);
+msgctl(msgid, IPC_RMID, NULL);
+return 0;
+}
+output :
+message sent : hello from ipc message queue!
+message received : hello from ipc message queue!
