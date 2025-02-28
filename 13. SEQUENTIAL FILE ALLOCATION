@@ -1,0 +1,61 @@
+#include &lt;stdio.h&gt;
+
+#define MAX_FILES 100
+
+struct File {
+int start;
+int length;
+};
+
+int disk[MAX_FILES] = {0}; // 0 means free, 1 means occupied
+struct File files[MAX_FILES];
+int file_count = 0;
+
+void allocateFile(int start, int length) {
+if (start &lt; 0 || start + length &gt; MAX_FILES) {
+printf(&quot;Invalid allocation range!\n&quot;);
+return;
+}
+
+for (int i = start; i &lt; start + length; i++) {
+if (disk[i] == 1) {
+printf(&quot;Allocation failed! Block %d is already occupied.\n&quot;, i);
+return;
+}
+}
+
+for (int i = start; i &lt; start + length; i++) {
+disk[i] = 1;
+}
+
+files[file_count].start = start;
+files[file_count].length = length;
+file_count++;
+
+printf(&quot;File allocated from %d to %d\n&quot;, start, start + length - 1);
+}
+
+void displayDisk() {
+printf(&quot;Disk Blocks:\n&quot;);
+for (int i = 0; i &lt; MAX_FILES; i++) {
+printf(&quot;%d&quot;, disk[i]);
+}
+printf(&quot;\n&quot;);
+}
+
+int main() {
+allocateFile(5, 10);
+allocateFile(20, 5);
+allocateFile(8, 6); // Overlapping allocation
+
+displayDisk();
+
+return 0;
+}
+
+input :
+file allocated from 5 to 14
+file allocation from 20 to 24
+allocation failed block 8 is already occupied 
+output :
+00000011111111111100000011111100000000000000000000000000000000000000000000000000000000
