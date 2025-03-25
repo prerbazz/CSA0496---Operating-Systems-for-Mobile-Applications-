@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+int main() {
+    int fd;
+    char buffer[100];
+
+    fd = open("sample.txt", O_CREAT | O_WRONLY, 0644);
+    write(fd, "File management in UNIX!\n", 25);
+    close(fd);
+
+    fd = open("sample.txt", O_RDONLY);
+    read(fd, buffer, sizeof(buffer));
+    printf("Reading File:\n%s", buffer);
+    close(fd);
+
+    rename("sample.txt", "newfile.txt");
+    remove("newfile.txt");
+
+    return 0;
+}
+INPUT AND OUTPUT:
+Reading File:
+File management in UNIX!
