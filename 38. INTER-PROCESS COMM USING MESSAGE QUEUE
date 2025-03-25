@@ -1,0 +1,66 @@
+SENDER PROCESS:
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <string.h>
+
+#define MSG_SIZE 100
+
+struct msg_buffer {
+    long msg_type;
+    char msg_text[MSG_SIZE];
+};
+
+int main() {
+    key_t key;
+    int msgid;
+    struct msg_buffer message;
+
+    key = ftok("msg_queue", 65);
+    msgid = msgget(key, 0666 | IPC_CREAT);
+
+    message.msg_type = 1;
+    printf("Enter message to send: ");
+    fgets(message.msg_text, MSG_SIZE, stdin);
+
+    msgsnd(msgid, &message, sizeof(message.msg_text), 0);
+    printf("Message sent: %s", message.msg_text);
+
+    return 0;
+}
+
+RECEIVER PROCESS:
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
+#define MSG_SIZE 100
+
+struct msg_buffer {
+    long msg_type;
+    char msg_text[MSG_SIZE];
+};
+
+int main() {
+    key_t key;
+    int msgid;
+    struct msg_buffer message;
+
+    key = ftok("msg_queue", 65);
+    msgid = msgget(key, 0666 | IPC_CREAT);
+
+    msgrcv(msgid, &message, sizeof(message.msg_text), 1, 0);
+    printf("Received message: %s", message.msg_text);
+
+    msgctl(msgid, IPC_RMID, NULL);
+
+    return 0;
+}
+
+I/O:
+Enter message to send: Hello from IPC!
+Message sent: Hello from IPC!
+
+Received message: Hello from IPC!
+
+
