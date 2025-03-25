@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void sort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++)
+        for (int j = 0; j < n - i - 1; j++)
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+}
+
+void cscan(int arr[], int n, int head, int disk_size) {
+    int total_movement = 0, i, index;
+    int left[100], right[100], left_count = 0, right_count = 0;
+
+    for (i = 0; i < n; i++) {
+        if (arr[i] < head) left[left_count++] = arr[i];
+        else right[right_count++] = arr[i];
+    }
+
+    sort(left, left_count);
+    sort(right, right_count);
+
+    for (i = 0; i < right_count; i++) {
+        printf("%d -> ", right[i]);
+        total_movement += abs(head - right[i]);
+        head = right[i];
+    }
+
+    total_movement += abs(head - (disk_size - 1));
+    head = 0;
+    printf("0 -> ");
+
+    for (i = 0; i < left_count; i++) {
+        printf("%d -> ", left[i]);
+        total_movement += abs(head - left[i]);
+        head = left[i];
+    }
+
+    printf("End\nTotal Head Movement: %d\n", total_movement);
+}
+
+int main() {
+    int n, head, disk_size;
+    printf("Enter number of requests: ");
+    scanf("%d", &n);
+    int arr[n];
+    printf("Enter request sequence: ");
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+
+    printf("Enter head position: ");
+    scanf("%d", &head);
+    printf("Enter disk size: ");
+    scanf("%d", &disk_size);
+
+    printf("\nC-SCAN Order: %d -> ", head);
+    cscan(arr, n, head, disk_size);
+
+    return 0;
+}
+
+Enter number of requests: 7
+Enter request sequence: 82 170 43 140 24 16 190
+Enter head position: 50
+Enter disk size: 200
+
+C-SCAN Order: 50 -> 82 -> 140 -> 170 -> 190 -> 0 -> 16 -> 24 -> 43 -> End
+Total Head Movement: 322
+
+
