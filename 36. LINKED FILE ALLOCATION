@@ -1,0 +1,38 @@
+#include <stdio.h>
+
+typedef struct {
+    int blockNumber;
+    int nextBlock;
+} Block;
+
+int main() {
+    int n;
+    printf("Enter the number of file blocks: ");
+    scanf("%d", &n);
+
+    Block file[n];
+    printf("Enter the block numbers: ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &file[i].blockNumber);
+        if (i > 0) file[i - 1].nextBlock = file[i].blockNumber;
+    }
+    file[n - 1].nextBlock = -1; // End of the file
+
+    printf("\nFile Allocation Table:\n");
+    printf("Block  Next Block\n");
+    for (int i = 0; i < n; i++)
+        printf("%d      %d\n", file[i].blockNumber, file[i].nextBlock);
+
+    return 0;
+}
+
+I/O:
+Enter the number of file blocks: 4
+Enter the block numbers: 10 20 30 40
+
+File Allocation Table:
+Block  Next Block
+10      20
+20      30
+30      40
+40      -1
