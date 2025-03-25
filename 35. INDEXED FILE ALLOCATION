@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+#define MAX_BLOCKS 100
+
+int main() {
+    int indexBlock[MAX_BLOCKS], n;
+
+    printf("Enter the number of file blocks: ");
+    scanf("%d", &n);
+
+    printf("Enter the block numbers: ");
+    for (int i = 0; i < n; i++)
+        scanf("%d", &indexBlock[i]);
+
+    printf("\nIndex Block: [ ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", indexBlock[i]);
+    printf("]\n");
+
+    printf("File stored at blocks: ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", indexBlock[i]);
+    printf("\n");
+
+    return 0;
+}
+
+Enter the number of file blocks: 5
+Enter the block numbers: 2 5 8 12 15
+
+Index Block: [ 2 5 8 12 15 ]
+File stored at blocks: 2 5 8 12 15
