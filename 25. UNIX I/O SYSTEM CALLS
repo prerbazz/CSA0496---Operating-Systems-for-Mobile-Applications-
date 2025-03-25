@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+int main() {
+    struct stat fileStat;
+    int fd = open("test.txt", O_CREAT | O_WRONLY, 0644);
+    write(fd, "UNIX I/O Calls", 14);
+    close(fd);
+
+    stat("test.txt", &fileStat);
+    printf("File Size: %ld bytes\n", fileStat.st_size);
+
+    fd = open("test.txt", O_RDWR);
+    lseek(fd, 5, SEEK_SET);
+    write(fd, "System", 6);
+    close(fd);
+
+    DIR *dir = opendir(".");
+    struct dirent *entry;
+    printf("Files in current directory:\n");
+    while ((entry = readdir(dir)) != NULL) {
+        printf("%s\n", entry->d_name);
+    }
+    closedir(dir);
+
+    unlink("test.txt");
+    
+    return 0;
+}
+
+INPUT AND OUTPUT: 
+File Size: 14 bytes
+Files in current directory:
+.
+..
+a.out
+main.c
+test.txt
+data.txt
