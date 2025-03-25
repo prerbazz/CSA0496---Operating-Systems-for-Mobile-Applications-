@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define FILENAME "employees.dat"
+
+typedef struct {
+    int id;
+    char name[30];
+    float salary;
+} Employee;
+
+void addEmployee() {
+    Employee emp;
+    FILE *fp = fopen(FILENAME, "ab");
+    if (!fp) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    printf("Enter Employee ID: ");
+    scanf("%d", &emp.id);
+    printf("Enter Employee Name: ");
+    scanf("%s", emp.name);
+    printf("Enter Salary: ");
+    scanf("%f", &emp.salary);
+
+    fwrite(&emp, sizeof(Employee), 1, fp);
+    fclose(fp);
+    printf("Employee added successfully!\n");
+}
+
+void displayEmployees() {
+    Employee emp;
+    FILE *fp = fopen(FILENAME, "rb");
+    if (!fp) {
+        printf("No employees found!\n");
+        return;
+    }
+
+    printf("\nEmployee Details:\n");
+    printf("ID\tName\tSalary\n");
+    while (fread(&emp, sizeof(Employee), 1, fp))
+        printf("%d\t%s\t%.2f\n", emp.id, emp.name, emp.salary);
+
+    fclose(fp);
+}
+
+void searchEmployee() {
+    int searchID;
+    Employee emp;
+    FILE *fp = fopen(FILENAME, "rb");
+    if (!fp) {
+        printf("File not found!\n");
+        return;
+    }
+
+    printf("Enter Employee ID to search: ");
+    scanf("%d", &searchID);
+
+    while (fread(&emp, sizeof(Employee), 1, fp)) {
+        if (emp.id == searchID) {
+            printf("Employee Found!\nID: %d\nName: %s\nSalary: %.2f\n", emp.id, emp.name, emp.salary);
+            fclose(fp);
+            return;
+        }
+    }
+
+    printf("Employee not found!\n");
+    fclose(fp);
+}
+
+int main() {
+    int choice;
+    do {
+        printf("\nEmployee Management System\n");
+        printf("1. Add Employee\n2. Display Employees\n3. Search Employee\n4. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: addEmployee(); break;
+            case 2: displayEmployees(); break;
+            case 3: searchEmployee(); break;
+            case 4: printf("Exiting...\n"); break;
+            default: printf("Invalid choice! Try again.\n");
+        }
+    } while (choice != 4);
+
+    return 0;
+}
+I/O:
+Employee Management System
+1. Add Employee
+2. Display Employees
+3. Search Employee
+4. Exit
+Enter choice: 1
+Enter Employee ID: 101
+Enter Employee Name: John
+Enter Salary: 50000
+Employee added successfully!
+
+Enter choice: 2
+Employee Details:
+ID   Name    Salary
+101  John    50000.00
+
+Enter choice: 3
+Enter Employee ID to search: 101
+Employee Found!
+ID: 101
+Name: John
+Salary: 50000.00
+
+Enter choice: 4
+Exiting...
+
