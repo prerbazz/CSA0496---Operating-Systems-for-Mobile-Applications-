@@ -1,0 +1,70 @@
+#include <stdio.h>
+
+typedef struct {
+    int pid, burst, waiting, turnaround;
+} Process;
+
+void sortByBurstTime(Process p[], int n) {
+    for (int i = 0; i < n - 1; i++)
+        for (int j = 0; j < n - i - 1; j++)
+            if (p[j].burst > p[j + 1].burst) {
+                Process temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+}
+
+void calculateTimes(Process p[], int n) {
+    p[0].waiting = 0; // First process has no waiting time
+    for (int i = 1; i < n; i++)
+        p[i].waiting = p[i - 1].waiting + p[i - 1].burst;
+    
+    for (int i = 0; i < n; i++)
+        p[i].turnaround = p[i].waiting + p[i].burst;
+}
+
+void display(Process p[], int n) {
+    float avgWT = 0, avgTAT = 0;
+    printf("\nPID\tBurst\tWaiting\tTurnaround\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%d\t%d\t%d\n", p[i].pid, p[i].burst, p[i].waiting, p[i].turnaround);
+        avgWT += p[i].waiting;
+        avgTAT += p[i].turnaround;
+    }
+    printf("Average Waiting Time: %.2f\n", avgWT / n);
+    printf("Average Turnaround Time: %.2f\n", avgTAT / n);
+}
+
+int main() {
+    int n;
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+    
+    Process p[n];
+    for (int i = 0; i < n; i++) {
+        p[i].pid = i + 1;
+        printf("Enter burst time for process %d: ", p[i].pid);
+        scanf("%d", &p[i].burst);
+    }
+
+    sortByBurstTime(p, n);
+    calculateTimes(p, n);
+    display(p, n);
+
+    return 0;
+}
+
+I/O:
+Enter number of processes: 4
+Enter burst time for process 1: 6
+Enter burst time for process 2: 8
+Enter burst time for process 3: 7
+Enter burst time for process 4: 3
+
+PID   Burst  Waiting  Turnaround
+4     3      0        3
+1     6      3        9
+3     7      9        16
+2     8      16       24
+Average Waiting Time: 7.00
+Average Turnaround Time: 13.00
